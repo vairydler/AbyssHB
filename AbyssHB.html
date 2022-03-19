@@ -1,0 +1,100 @@
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<script src="https://unpkg.com/vue@next"></script>
+	<link rel="stylesheet" href="css/layout.css">
+	<link rel="stylesheet" href="css/color.css">
+	<link rel="stylesheet" href="css/anime.css">
+	<script type="text/javascript" src="js/main.js"></script>
+	<script type="text/javascript" src="js/clone.js"></script>
+	<script type="text/javascript" src="js/random.js"></script>
+	<script type="text/javascript" src="js/URLParam.cls.js"></script>
+	<script type="text/javascript" src="js/GenParam.cls.js"></script>
+	<script type="text/javascript" src="js/vue/GameInitializer.cls.js"></script>
+	<script type="text/javascript" src="js/vue/GameGenerate.cls.js"></script>
+	<script type="text/javascript" src="js/vue/GameMaster.cls.js"></script>
+</head>
+<body>
+	<label class="playguide" for="playguide">遊び方</label>
+	<input type="checkbox" id="playguide" class="slidearea"/>
+	<div class="playguide slidearea">
+		<pre>
+＜概要＞
+・制限に則ってボス・秘境を全て攻略していく遊び。
+・クリアごとにランダムで一定の制限を解除可能。
+
+＜ルールの補足＞
+・ゲームオーバーの条件は全滅のみ。
+・基本的に、各回数は、攻略完了時に消費するものとする。プレイヤー一人につき1消費する。
+・一時撤退等は問題ないが、ロールバック(戦闘不能状態や、HP等をルールに従わず回復するような行為)は不可とする。
+
+＜ツールの動作仕様＞
+・生成ボタンを押すと、設定範囲を元にランダムで条件が生成される。
+・クリアのチェックを入れることにより、制限の上限が増える。
+・生成結果のスピンボタンはメモ代わりに使用するためのもので、特別な効果はない。
+・かなりのパラメータをURLで保持しているため、場合によっては上限超えるかも。
+		</pre>
+	</div>
+	<label class="inputarea" for="inputarea">設定</label>
+	<input type="checkbox" id="inputarea" class="slidearea"/>
+	<div class="inputarea slidearea">
+		<div id="gameinitializer">
+			<label>獲得効果表示<input type="checkbox" v-model="effectdisp"></label>
+			<label>デッキ種類</label><input class="num" v-model.number="decksize" @change="decksizechange"></input>
+			<table>
+				<tr><th>No</th><th>名前</th><th>初期ドロー</th><th>内容物</th></tr>
+				<tr v-for="(deck,no) in decks">
+					<td>{{no}}</td>
+					<td><input v-model="deck.name"></input></td>
+					<td><input type="number" class="num" v-model="deck.draw"></input></td>
+					<td><textarea v-model.trim="deck.value"></textarea></td>
+				</tr>
+			</table>
+			
+			<label>ランク数</label><input class="num" v-model.number="ranksize" @change="ranksizechange"></input>
+			<table>
+				<tr><th>ランク</th><th>初期ドロー</th><th v-for="deck in decks">{{deck.name}}</th><th>対象</th></tr>
+				<tr v-for="(rank,no) in ranks">
+					<td>{{no}}</td>
+					<td><input type="number" class="num" v-model="ranks[no].draw" /></td>
+					<td v-for="(drawcnt,idx) in rank.decks"><input type="number" class="num" v-model.number="rank.decks[idx]"></input></td>
+					<td><textarea v-model.trim="rank.value"></textarea></td>
+				</tr>
+			</table>
+			
+			<button hidden @click="dbgdisp">disp</button>
+		</div>
+	</div>
+	<div id="generate">
+		<button class="outputbutton" @click="generateUrl">生成</button>
+	</div>
+	<div id="gamemaster">
+		<table>
+			<tr><th>目標</th><th>ランク</th><th>クリア</th><th v-if="effectdisp">獲得効果</th></tr>
+			<tr v-for="target in targets">
+				<td>{{target.name}}</td>
+				<td>{{target.rank}}</td>
+				<td><input type="checkbox" v-model="target.clear"/></td>
+				<td v-if="effectdisp">
+					<table>
+						<tr v-for="(val,key) in drawstatistic( target.draw )">
+							<td>{{key}}</td>
+							<td>{{val}}</td>
+						</tr>
+					</table>
+				</td>
+			</tr>
+		</table>
+		<table>
+			<tr><th>種別</th><th>効果</th><th>使用可能数</th><th colspan=2>使用済み数</th></tr>
+			<tr v-for="effect in effectsstatistic">
+				<td>{{effect.type}}</td>
+				<td>{{effect.text}}</td>
+				<td>{{effect.count}}</td>
+				<td><input type="range" :max="effect.count" v-model="effectuse[effect.type][effect.text]"></td>
+				<td>{{effectuse[effect.type][effect.text]}}</td>
+			</tr>
+		</table>
+	</div>
+</body>
+</html>
