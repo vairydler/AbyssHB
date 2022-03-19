@@ -20,79 +20,63 @@
 	<div class="playguide slidearea">
 		<pre>
 ＜概要＞
-・制限に則ってボス・秘境を全て攻略していく遊び。
-・クリアごとにランダムで一定の制限を解除可能。
+・螺旋の前後半の構成を当てる遊び。順不同。
+・それ以外はヒット&ブローと同じ。
 
-＜ルールの補足＞
-・ゲームオーバーの条件は全滅のみ。
-・基本的に、各回数は、攻略完了時に消費するものとする。プレイヤー一人につき1消費する。
-・一時撤退等は問題ないが、ロールバック(戦闘不能状態や、HP等をルールに従わず回復するような行為)は不可とする。
-
-＜ツールの動作仕様＞
-・生成ボタンを押すと、設定範囲を元にランダムで条件が生成される。
-・クリアのチェックを入れることにより、制限の上限が増える。
-・生成結果のスピンボタンはメモ代わりに使用するためのもので、特別な効果はない。
-・かなりのパラメータをURLで保持しているため、場合によっては上限超えるかも。
 		</pre>
 	</div>
-	<label class="inputarea" for="inputarea">設定</label>
-	<input type="checkbox" id="inputarea" class="slidearea"/>
-	<div class="inputarea slidearea">
-		<div id="gameinitializer">
-			<label>獲得効果表示<input type="checkbox" v-model="effectdisp"></label>
-			<label>デッキ種類</label><input class="num" v-model.number="decksize" @change="decksizechange"></input>
-			<table>
-				<tr><th>No</th><th>名前</th><th>初期ドロー</th><th>内容物</th></tr>
-				<tr v-for="(deck,no) in decks">
-					<td>{{no}}</td>
-					<td><input v-model="deck.name"></input></td>
-					<td><input type="number" class="num" v-model="deck.draw"></input></td>
-					<td><textarea v-model.trim="deck.value"></textarea></td>
-				</tr>
-			</table>
-			
-			<label>ランク数</label><input class="num" v-model.number="ranksize" @change="ranksizechange"></input>
-			<table>
-				<tr><th>ランク</th><th>初期ドロー</th><th v-for="deck in decks">{{deck.name}}</th><th>対象</th></tr>
-				<tr v-for="(rank,no) in ranks">
-					<td>{{no}}</td>
-					<td><input type="number" class="num" v-model="ranks[no].draw" /></td>
-					<td v-for="(drawcnt,idx) in rank.decks"><input type="number" class="num" v-model.number="rank.decks[idx]"></input></td>
-					<td><textarea v-model.trim="rank.value"></textarea></td>
-				</tr>
-			</table>
-			
-			<button hidden @click="dbgdisp">disp</button>
+	<div id="gameinitializer">
+		<label class="inputarea" for="inputarea">設定</label>
+		<input type="checkbox" id="inputarea" class="slidearea"/>
+		<div class="inputarea slidearea">
+			<label>デッキ内容</label>
+			<textarea v-model.trim="デッキテキスト"></textarea>
+
+			<label>モード</label>
+			<label v-for="mode in modelist">
+				<input type="radio" v-model="動作モード" :value="mode">{{mode}}
+			</label>
+
+			<div v-if="防御">
+				<label>自分の編成</label>
+				<div>
+					<span v-for="(char,idx) in 答え">
+						<select v-model="答え[idx]" class="キャラ" :class="{duplicate:duplicate(char)}">
+							<option v-for="キャラ in デッキ配列" :value="キャラ">{{キャラ}}</option>
+						</select>
+						<br v-if="idx==3">
+					</span>
+				</div>
+			</div>
 		</div>
-	</div>
-	<div id="generate">
+
 		<button class="outputbutton" @click="generateUrl">生成</button>
 	</div>
 	<div id="gamemaster">
+		<label v-show="防御">相手が提案してきた内容</label>
+		<label v-show="攻撃">自分が提案したい内容</label>
+		<div>
+			<span v-for="(char,idx) in 提案">
+				<label v-show="idx==0">前半</label>
+				<label v-show="idx==4">後半</label>
+				<select v-model="提案[idx]" class="キャラ" :class="{duplicate:duplicate(char)}">
+					<option v-for="キャラ in デッキ配列" :value="キャラ">{{キャラ}}</option>
+				</select>
+				<br v-if="idx==3">
+			</span>
+			<br>
+			<button @click="確定" :disabled="duplicate()||notfill">確定</button>
+		</div>
+
+		<hr>
 		<table>
-			<tr><th>目標</th><th>ランク</th><th>クリア</th><th v-if="effectdisp">獲得効果</th></tr>
-			<tr v-for="target in targets">
-				<td>{{target.name}}</td>
-				<td>{{target.rank}}</td>
-				<td><input type="checkbox" v-model="target.clear"/></td>
-				<td v-if="effectdisp">
-					<table>
-						<tr v-for="(val,key) in drawstatistic( target.draw )">
-							<td>{{key}}</td>
-							<td>{{val}}</td>
-						</tr>
-					</table>
-				</td>
-			</tr>
-		</table>
-		<table>
-			<tr><th>種別</th><th>効果</th><th>使用可能数</th><th colspan=2>使用済み数</th></tr>
-			<tr v-for="effect in effectsstatistic">
-				<td>{{effect.type}}</td>
-				<td>{{effect.text}}</td>
-				<td>{{effect.count}}</td>
-				<td><input type="range" :max="effect.count" v-model="effectuse[effect.type][effect.text]"></td>
-				<td>{{effectuse[effect.type][effect.text]}}</td>
+			<tr v-show="履歴.length > 0"><th colspan=4>前半</th><th colspan=4>後半</th><th>H</th><th>B</th></tr>
+			<tr v-for="(履歴レコード,idx) in 履歴">
+				<td v-for="(キャラ,idx) in 履歴レコード.キャラ" class="キャラ" :class="{ヒット:ヒット(キャラ,idx),ブロー:ブロー(キャラ,idx)}">{{キャラ}}</td>
+				<td :class="{不一致:カウント不一致(idx,'H')}"><input v-model="履歴レコード.H" :disabled="防御"></td>
+				<td :class="{不一致:カウント不一致(idx,'B')}"><input v-model="履歴レコード.B" :disabled="防御"></td>
+				<td><button @click="削除(idx)">削除</button></td>
+				<td><button @click="反映(idx)">反映</button></td>
 			</tr>
 		</table>
 	</div>

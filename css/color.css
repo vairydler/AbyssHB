@@ -1,0 +1,34 @@
+body
+{
+	background-color:gray;
+}
+
+td
+{
+	background-color:gray;
+	color:black;
+}
+
+pre
+{
+	color:lightgoldenrodyellow;
+	font-weight:bold;
+}
+
+.キャラ.duplicate
+{
+	background-color:red;
+}
+.キャラ.ヒット
+{
+	background-color:lightgreen;
+}
+.キャラ.ブロー
+{
+	background-color:gold;
+}
+
+.不一致
+{
+	background-color:red;
+}

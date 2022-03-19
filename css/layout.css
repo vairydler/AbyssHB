@@ -1,0 +1,19 @@
+table
+{
+	border-collapse: collapse; /* 枠線(ボーダー)を重ねて表示 */
+}
+
+table td,th
+{
+	border: solid;
+}
+
+div.slidearea
+{
+	overflow:hidden;
+}
+
+.キャラ
+{
+	width:100px;
+}

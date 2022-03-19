@@ -1,0 +1,11 @@
+input.slidearea:checked + div.slidearea{
+	max-height:1500px;
+
+	transition: all 0.2s;
+}
+
+div.slidearea
+{
+	max-height:0px;
+	transition: all 0.2s;
+}
