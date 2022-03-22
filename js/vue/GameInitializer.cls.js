@@ -70,6 +70,7 @@
                     let swap = this[配列名][tempobj.インデックス];
                     this[配列名][tempobj.インデックス] = this[配列名][idx];
                     this[配列名][idx] = swap;
+                    e.preventDefault();
                 },
 				getParam(){
 					return {
