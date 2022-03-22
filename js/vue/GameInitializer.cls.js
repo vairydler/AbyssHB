@@ -51,6 +51,21 @@
 					let tempary = this.答え.filter(val=>(val==char));
 					return tempary.length > 1;
 				},
+                入れ替え開始(e,配列名,idx){
+                    let tempobj = {
+                        配列:配列名,
+                        インデックス:idx
+                    };
+
+                    e.dataTransfer.setData("text/plain", JSON.stringify(tempobj));
+                },
+                入れ替え終了(e,配列名,idx){
+                    let tempobj = JSON.parse( e.dataTransfer.getData("text/plain") );
+
+                    let swap = this[配列名][tempobj.インデックス];
+                    this[配列名][tempobj.インデックス] = this[配列名][idx];
+                    this[配列名][idx] = swap;
+                },
 				getParam(){
 					return {
 						"動作モード":this.動作モード,

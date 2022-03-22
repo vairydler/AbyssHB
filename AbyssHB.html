@@ -40,12 +40,16 @@
 			<div v-if="防御">
 				<label>自分の編成</label>
 				<div>
-					<span v-for="(char,idx) in 答え">
-						<select v-model="答え[idx]" class="キャラ" :class="{duplicate:duplicate(char)}">
-							<option v-for="キャラ in デッキ配列" :value="キャラ">{{キャラ}}</option>
-						</select>
-						<br v-if="idx==3">
-					</span>
+					<table>
+						<tr v-show="答え.length > 0"><th colspan=4>前半</th><th colspan=4>後半</th></tr>
+						<tr>
+							<td draggable="true" v-for="(char,idx) in 答え" @dragstart="入れ替え開始($event, '答え',idx)" ondragenter="return false" ondragover="return false" @drop="入れ替え終了($event, '答え',idx)">
+								<select v-model="答え[idx]" class="キャラ" :class="{duplicate:duplicate(char)}">
+									<option v-for="キャラ in デッキ配列" :value="キャラ">{{キャラ}}</option>
+								</select>
+							</td>		
+						</tr>
+					</table>
 				</div>
 			</div>
 		</div>
@@ -56,14 +60,16 @@
 		<label v-show="防御">相手が提案してきた内容</label>
 		<label v-show="攻撃">自分が提案したい内容</label>
 		<div>
-			<span v-for="(char,idx) in 提案">
-				<label v-show="idx==0">前半</label>
-				<label v-show="idx==4">後半</label>
-				<select v-model="提案[idx]" class="キャラ" :class="{duplicate:duplicate(char)}">
-					<option v-for="キャラ in デッキ配列" :value="キャラ">{{キャラ}}</option>
-				</select>
-				<br v-if="idx==3">
-			</span>
+			<table>
+				<tr v-show="提案.length > 0"><th colspan=4>前半</th><th colspan=4>後半</th></tr>
+				<tr>
+					<td draggable="true" v-for="(char,idx) in 提案" @dragstart="入れ替え開始($event, '提案',idx)" ondragenter="return false" ondragover="return false" @drop="入れ替え終了($event, '提案',idx)">
+						<select v-model="提案[idx]" class="キャラ" :class="{duplicate:duplicate(char)}">
+							<option v-for="キャラ in デッキ配列" :value="キャラ">{{キャラ}}</option>
+						</select>
+					</td>		
+				</tr>
+			</table>
 			<br>
 			<button @click="確定" :disabled="duplicate()||notfill">確定</button>
 		</div>
@@ -73,8 +79,8 @@
 			<tr v-show="履歴.length > 0"><th colspan=4>前半</th><th colspan=4>後半</th><th>H</th><th>B</th></tr>
 			<tr v-for="(履歴レコード,idx) in 履歴">
 				<td v-for="(キャラ,idx) in 履歴レコード.キャラ" class="キャラ" :class="{ヒット:ヒット(キャラ,idx),ブロー:ブロー(キャラ,idx)}">{{キャラ}}</td>
-				<td :class="{不一致:カウント不一致(idx,'H')}"><input v-model="履歴レコード.H" :disabled="防御"></td>
-				<td :class="{不一致:カウント不一致(idx,'B')}"><input v-model="履歴レコード.B" :disabled="防御"></td>
+				<td :class="{不一致:カウント不一致(idx,'H')}"><input type="number" min=0 max=8 v-model="履歴レコード.H" :disabled="防御"></td>
+				<td :class="{不一致:カウント不一致(idx,'B')}"><input type="number" min=0 max=8 v-model="履歴レコード.B" :disabled="防御"></td>
 				<td><button @click="削除(idx)">削除</button></td>
 				<td><button @click="反映(idx)">反映</button></td>
 			</tr>

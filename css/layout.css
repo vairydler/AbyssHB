@@ -17,3 +17,8 @@ div.slidearea
 {
 	width:100px;
 }
+
+select
+{
+	margin: 20px 0px 0px 0px;
+}

@@ -134,6 +134,21 @@
                     )
                     return (this.履歴[履歴idx][ヒットブロー] != cnt);
                 },
+                入れ替え開始(e,配列名,idx){
+                    let tempobj = {
+                        配列:配列名,
+                        インデックス:idx
+                    };
+
+                    e.dataTransfer.setData("text/plain", JSON.stringify(tempobj));
+                },
+                入れ替え終了(e,配列名,idx){
+                    let tempobj = JSON.parse( e.dataTransfer.getData("text/plain") );
+
+                    let swap = this[配列名][tempobj.インデックス];
+                    this[配列名][tempobj.インデックス] = this[配列名][idx];
+                    this[配列名][idx] = swap;
+                }
             }
         };
 		return Vue.createApp( gm ).mount( "#gamemaster" );
