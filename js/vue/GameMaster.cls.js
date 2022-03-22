@@ -65,13 +65,14 @@
                         履歴レコード.キャラ.forEach(
                             (e,i)=>
                             {
-                                if( internal.ヒットブロー判定( gameparam.答え,e,i) == "H" )
+                                switch( internal.ヒットブロー判定( gameparam.答え,e,i) )
                                 {
-                                    履歴レコード.H++;
-                                }
-                                else
-                                {
-                                    履歴レコード.B++; 
+                                    case "H":
+                                        履歴レコード.H++;
+                                        break;
+                                    case "B":
+                                        履歴レコード.B++; 
+                                        break;
                                 }
                             }
                         )
