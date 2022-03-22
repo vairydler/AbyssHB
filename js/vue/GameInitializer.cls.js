@@ -6,7 +6,7 @@
 			return {
 				デッキテキスト:"",
 				modelist:["攻撃","防御"],
-				動作モード:"",
+				動作モード:"防御",
 				答え:new Array(8),
 			};
 		};
@@ -43,9 +43,14 @@
 					new URLParam().set( paramobj );
 				},
 				dataset( dataobj ){
-					this.動作モード = dataobj.get("m");
-					this.デッキテキスト = dataobj.get("d").split(",").join("\n");
-					this.答え = dataobj.get("a").split(",");
+					let temp;
+
+					temp = dataobj.get("m");
+					if( temp ) this.動作モード = temp;
+					temp = dataobj.get("d");
+					if( temp ) this.デッキテキスト = temp.split(",").join("\n");
+					temp = dataobj.get("a");
+					if( temp ) this.答え = temp.split(",");
 				},
 				duplicate(char){
 					let tempary = this.答え.filter(val=>(val==char));
