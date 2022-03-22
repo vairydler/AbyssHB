@@ -123,6 +123,11 @@
                 },
                 カウント不一致(履歴idx,ヒットブロー){
                     let cnt=0;
+                    
+                    if( gameparam.動作モード == "防御"){
+                        return false;
+                    }
+                    
                     this.履歴[履歴idx].キャラ.forEach(
                         (e,i)=>
                         {
@@ -132,6 +137,7 @@
                             }
                         }
                     )
+                    
                     return (this.履歴[履歴idx][ヒットブロー] != cnt);
                 },
                 入れ替え開始(e,配列名,idx){
