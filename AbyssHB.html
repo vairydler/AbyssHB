@@ -83,8 +83,8 @@
 				<td v-for="(キャラ,idx) in 履歴レコード.キャラ" class="キャラ" :class="{ヒット:ヒット(キャラ,idx),ブロー:ブロー(キャラ,idx)}">{{キャラ}}</td>
 				<td :class="{不一致:カウント不一致(idx,'H')}"><input type="number" min=0 max=8 v-model="履歴レコード.H" :disabled="防御"></td>
 				<td :class="{不一致:カウント不一致(idx,'B')}"><input type="number" min=0 max=8 v-model="履歴レコード.B" :disabled="防御"></td>
-				<td><button @click="削除(idx)">削除</button></td>
 				<td><button @click="反映(idx)">反映</button></td>
+				<td><button @click="削除(idx)">削除</button></td>
 			</tr>
 		</table>
 	</div>

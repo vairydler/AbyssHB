@@ -80,7 +80,10 @@
                     this.履歴.push( 履歴レコード );
                 },
                 削除(idx){
-                    this.履歴.splice(idx,1);
+                    if( window.confirm("削除する？") )
+                    {
+                        this.履歴.splice(idx,1);
+                    }
                 },
                 反映(idx){
                     this.提案 = [...this.履歴[idx].キャラ];
