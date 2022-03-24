@@ -100,8 +100,17 @@
                 コピー(idx){
                     let 前半 = [...this.履歴[idx].キャラ].splice(0,4);
                     let 後半 = [...this.履歴[idx].キャラ].splice(4,4);
+                    let コピーデータ = 前半.join(",") + "\n" + 後半.join(",");
                     
-                    navigator.clipboard.writeText(前半.join(",") + "\n" + 後半.join(","));
+                    navigator.clipboard.writeText(コピーデータ).then(
+                        ()=>{},
+                        ()=>{
+                            var copyText = document.getElementById("copyarea");
+                            copyText.value = コピーデータ;
+                            copyText.select();
+                            document.execCommand("copy");
+                        }
+                    );
                 },
                 反映(idx){
                     this.攻撃提案 = [...this.履歴[idx].キャラ];
