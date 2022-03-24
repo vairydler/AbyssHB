@@ -59,21 +59,25 @@
 		<button class="outputbutton" @click="generateUrl">生成</button>
 	</div>
 	<div id="gamemaster">
-		<label v-show="防御">相手が提案してきた内容</label>
-		<label v-show="攻撃">自分が提案したい内容</label>
-		<div>
+		<div v-if="攻撃">
+			<label>自分が提案したい内容</label>
 			<table>
-				<tr v-show="提案.length > 0"><th colspan=4>前半</th><th colspan=4>後半</th></tr>
+				<tr v-show="攻撃提案.length > 0"><th colspan=4>前半</th><th colspan=4>後半</th></tr>
 				<tr>
-					<td draggable="true" v-for="(char,idx) in 提案" @dragstart="入れ替え開始($event, '提案',idx)" ondragenter="return false" ondragover="return false" @drop="入れ替え終了($event, '提案',idx)">
-						<select v-model="提案[idx]" class="キャラ" :class="{duplicate:duplicate(char)}">
+					<td draggable="true" v-for="(char,idx) in 攻撃提案" @dragstart="入れ替え開始($event, '攻撃提案',idx)" ondragenter="return false" ondragover="return false" @drop="入れ替え終了($event, '攻撃提案',idx)">
+						<select v-model="攻撃提案[idx]" class="キャラ" :class="{duplicate:duplicate(char)}">
 							<option v-for="キャラ in デッキ配列" :value="キャラ">{{キャラ}}</option>
 						</select>
 					</td>		
 				</tr>
 			</table>
 			<br>
-			<button @click="確定" :disabled="duplicate()||notfill">確定</button>
+			<button @click="攻撃確定" :disabled="duplicate()||notfill">確定</button>
+		</div>
+		<div v-if="防御">
+			<label>相手が提案してきた内容</label>
+			<textarea v-model.trim="防御提案"></textarea>
+			<button @click="防御確定">確定</button>
 		</div>
 
 		<hr>
@@ -84,6 +88,7 @@
 				<td :class="{不一致:カウント不一致(idx,'H')}"><input type="number" min=0 max=8 v-model="履歴レコード.H" :disabled="防御"></td>
 				<td :class="{不一致:カウント不一致(idx,'B')}"><input type="number" min=0 max=8 v-model="履歴レコード.B" :disabled="防御"></td>
 				<td><button @click="反映(idx)">反映</button></td>
+				<td><button @click="コピー(idx)">コピー</button></td>
 				<td><button @click="削除(idx)">削除</button></td>
 			</tr>
 		</table>
