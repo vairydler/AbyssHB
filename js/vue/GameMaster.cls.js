@@ -101,16 +101,39 @@
                     let 前半 = [...this.履歴[idx].キャラ].splice(0,4);
                     let 後半 = [...this.履歴[idx].キャラ].splice(4,4);
                     let コピーデータ = 前半.join(",") + "\n" + 後半.join(",");
-                    
-                    navigator.clipboard.writeText(コピーデータ).then(
-                        ()=>{},
-                        ()=>{
-                            var copyText = document.getElementById("copyarea");
-                            copyText.value = コピーデータ;
+                    let legacyCopy = function(text){
+                        var copyText = document.getElementById("copyarea");
+
+                        /* input以外用 */
+                        if(1)
+                        {
+                            copyText.innerHTML = text;
+                            var range = document.createRange();
+                            range.selectNode(copyText);
+                            window.getSelection().removeAllRanges();
+                            window.getSelection().addRange(range);
+                            document.execCommand("copy");
+                            copyText.innerHTML = "";
+                        }
+                        /* input用 */
+                        else
+                        {
+                            copyText.value = text;
                             copyText.select();
                             document.execCommand("copy");
+                            copyText.value = "";
                         }
-                    );
+                    }
+                
+                    try{
+                        navigator.clipboard.writeText(コピーデータ).then(
+                            ()=>{},
+                            ()=>{legacyCopy(コピーデータ)}
+                        );
+                    }
+                    catch(e){
+                        legacyCopy(コピーデータ);
+                    }
                 },
                 反映(idx){
                     this.攻撃提案 = [...this.履歴[idx].キャラ];
