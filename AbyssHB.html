@@ -73,7 +73,7 @@
 		</div>
 		<div v-if="防御">
 			<label>相手が提案してきた内容</label>
-			<textarea v-model.trim="防御提案"></textarea>
+			<textarea v-model.trim="防御提案" @focus="(e)=>{e.target.select();}"></textarea>
 			<button @click="防御確定">確定</button>
 		</div>
 
