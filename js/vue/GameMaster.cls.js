@@ -14,7 +14,43 @@
                     ret = ( internal.前後半判定( findidx ) == internal.前後半判定( idx ) ) ? "H" : "B";
                 }
                 return ret;
-            }
+            },
+            コピー(text)
+            {
+                let legacyCopy = function(text){
+                    var copyText = document.getElementById("copyarea");
+
+                    /* input以外用 */
+                    if(1)
+                    {
+                        copyText.innerHTML = text;
+                        var range = document.createRange();
+                        range.selectNode(copyText);
+                        window.getSelection().removeAllRanges();
+                        window.getSelection().addRange(range);
+                        document.execCommand("copy");
+                        copyText.innerHTML = "";
+                    }
+                    /* input用 */
+                    else
+                    {
+                        copyText.value = text;
+                        copyText.select();
+                        document.execCommand("copy");
+                        copyText.value = "";
+                    }
+                }
+            
+                try{
+                    navigator.clipboard.writeText(text).then(
+                        ()=>{},
+                        ()=>{legacyCopy(text)}
+                    );
+                }
+                catch(e){
+                    legacyCopy(text);
+                }
+           }
         };
 
         function defval(){
@@ -81,6 +117,7 @@
                     )
 
                     this.履歴.push( 履歴レコード );
+                    this.防御コピー(this.履歴.length-1);
                 },
                 攻撃確定(){
                     let 履歴レコード = {};
@@ -89,7 +126,7 @@
                     履歴レコード.B = 0;
 
                     this.履歴.push( 履歴レコード );
-                    this.コピー(this.履歴.length-1);
+                    this.攻撃コピー(this.履歴.length-1);
                 },
                 削除(idx){
                     if( window.confirm("削除する？") )
@@ -97,43 +134,16 @@
                         this.履歴.splice(idx,1);
                     }
                 },
-                コピー(idx){
+                攻撃コピー(idx){
                     let 前半 = [...this.履歴[idx].キャラ].splice(0,4);
                     let 後半 = [...this.履歴[idx].キャラ].splice(4,4);
                     let コピーデータ = 前半.join(",") + "\n" + 後半.join(",");
-                    let legacyCopy = function(text){
-                        var copyText = document.getElementById("copyarea");
 
-                        /* input以外用 */
-                        if(1)
-                        {
-                            copyText.innerHTML = text;
-                            var range = document.createRange();
-                            range.selectNode(copyText);
-                            window.getSelection().removeAllRanges();
-                            window.getSelection().addRange(range);
-                            document.execCommand("copy");
-                            copyText.innerHTML = "";
-                        }
-                        /* input用 */
-                        else
-                        {
-                            copyText.value = text;
-                            copyText.select();
-                            document.execCommand("copy");
-                            copyText.value = "";
-                        }
-                    }
-                
-                    try{
-                        navigator.clipboard.writeText(コピーデータ).then(
-                            ()=>{},
-                            ()=>{legacyCopy(コピーデータ)}
-                        );
-                    }
-                    catch(e){
-                        legacyCopy(コピーデータ);
-                    }
+                    internal.コピー(コピーデータ);
+                },
+                防御コピー(idx){
+                    let コピーデータ = this.履歴[idx].H +"H" + this.履歴[idx].B +"B";
+                    internal.コピー(コピーデータ);
                 },
                 反映(idx){
                     this.攻撃提案 = [...this.履歴[idx].キャラ];
